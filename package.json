@@ -1,0 +1,32 @@
+{
+  "name": "inst377-final",
+  "version": "1.0.0",
+  "description": "INST377 Final Project",
+  "homepage": "https://github.com/vincedu1/INST377-Final#readme",
+  "bugs": {
+    "url": "https://github.com/vincedu1/INST377-Final/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vincedu1/INST377-Final.git"
+  },
+  "license": "ISC",
+  "author": "Vincent Du",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.11"
+  }
+}

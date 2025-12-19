@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INST377 Final - Fitness Tracker Exercises & Log</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #667eea;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .exercise-item {
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .exercise-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .exercise-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .log-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .exercise-detail {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .exercise-detail img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .section-divider {
+            margin: 40px 0;
+            border-top: 2px solid rgba(255,255,255,0.3);
+        }
+
+        #exerciseList {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        #exerciseList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #exerciseList::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #exerciseList::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        #exerciseList::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Fitness Tracker</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="exercises.html" class="active">Exercises & Log</a></li>
+                <li><a href="progress.html">Progress & Goals</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Log Your Workout</h2>
+            <div class="input-group">
+                <label>Exercise Name</label>
+                <input type="text" id="logExercise" placeholder="e.g., Bench Press">
+            </div>
+            <div class="grid">
+                <div class="input-group">
+                    <label>Sets</label>
+                    <input type="number" id="logSets" min="1" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Reps</label>
+                    <input type="number" id="logReps" min="1" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Weight (lbs)</label>
+                    <input type="number" id="logWeight" min="0" value="0">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Notes</label>
+                <textarea id="logNotes" rows="3" placeholder="Enter text here"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="logWorkout()">Log Workout</button>
+        </div>
+
+        <div class="card">
+            <h2>Today's Workouts</h2>
+            <div id="todayWorkouts"></div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="card">
+            <h2>Exercise Library</h2>
+            <div class="input-group">
+                <label>Search Exercises</label>
+                <input type="text" id="exerciseSearch" placeholder="Search by name">
+            </div>
+            <div class="input-group">
+                <label>Filter by Muscle Group</label>
+                <select id="muscleFilter">
+                    <option value="">All Muscle Groups</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="searchExercises()">Search</button>
+            <div id="exerciseList" class="loading">Loading exercises...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        const WGER_API_URL = 'https://wger.de/api/v2';
+
+        let exercises = [];
+        let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+
+        async function loadExercises() {
+            try {
+                const response = await fetch(`${WGER_API_URL}/exerciseinfo/?limit=100`);
+                const data = await response.json();
+                exercises = data.results;
+                displayExercises(exercises);
+            } catch (error) {
+                console.error('Error loading exercises:', error);
+                document.getElementById('exerciseList').innerHTML = '<p>Error loading exercises. Please try again.</p>';
+            }
+        }
+
+        async function loadMuscleGroups() {
+            try {
+                const response = await fetch(`${WGER_API_URL}/muscle/`);
+                const data = await response.json();
+                const select = document.getElementById('muscleFilter');
+                data.results.forEach(muscle => {
+                    const option = document.createElement('option');
+                    option.value = muscle.id;
+                    option.textContent = muscle.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading muscle groups:', error);
+            }
+        }
+
+        function displayExercises(exerciseList) {
+            const container = document.getElementById('exerciseList');
+            if (exerciseList.length === 0) {
+                container.innerHTML = '<p>No exercises found.</p>';
+                return;
+            }
+
+            container.innerHTML = exerciseList.map(exercise => {
+                const englishTranslation = exercise.translations.find(t => t.language === 2);
+                const exerciseName = englishTranslation ? englishTranslation.name : 
+                                    (exercise.translations[0] ? exercise.translations[0].name : 'Unknown Exercise');
+                const description = englishTranslation && englishTranslation.description ? 
+                                  englishTranslation.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...' : 
+                                  'Click to view details';
+                const muscles = exercise.muscles.map(m => m.name_en || m.name).filter(Boolean).join(', ');
+                
+                return `
+                    <div class="exercise-item" onclick="showExerciseDetail(${exercise.id})">
+                        <h3>${exerciseName}</h3>
+                        <p><strong>Muscles:</strong> ${muscles || 'Various'}</p>
+                        <p>${description}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function searchExercises() {
+            const searchTerm = document.getElementById('exerciseSearch').value.toLowerCase();
+            const muscleFilter = document.getElementById('muscleFilter').value;
+
+            let filtered = exercises;
+
+            if (searchTerm) {
+                filtered = filtered.filter(ex => {
+                    const englishTranslation = ex.translations.find(t => t.language === 2);
+                    const exerciseName = englishTranslation ? englishTranslation.name : 
+                                        (ex.translations[0] ? ex.translations[0].name : '');
+                    return exerciseName.toLowerCase().includes(searchTerm);
+                });
+            }
+
+            if (muscleFilter) {
+                filtered = filtered.filter(ex => 
+                    ex.muscles && ex.muscles.some(m => m.id === parseInt(muscleFilter))
+                );
+            }
+
+            displayExercises(filtered);
+        }
+
+        async function showExerciseDetail(id) {
+            try {
+                const response = await fetch(`${WGER_API_URL}/exerciseinfo/${id}/`);
+                const exercise = await response.json();
+
+                const englishTranslation = exercise.translations.find(t => t.language === 2);
+                const exerciseName = englishTranslation ? englishTranslation.name : 
+                                    (exercise.translations[0] ? exercise.translations[0].name : 'Exercise');
+                const description = englishTranslation && englishTranslation.description ? 
+                                  englishTranslation.description : 'No description available';
+
+                const primaryMuscles = exercise.muscles.map(m => m.name_en || m.name).filter(Boolean).join(', ');
+                const secondaryMuscles = exercise.muscles_secondary.map(m => m.name_en || m.name).filter(Boolean).join(', ');
+                const equipment = exercise.equipment.map(e => e.name).join(', ');
+                
+                let detailHTML = `
+                    <div class="exercise-detail">
+                        <h3>${exerciseName}</h3>
+                        <p><strong>Category:</strong> ${exercise.category.name}</p>
+                        ${primaryMuscles ? `<p><strong>Primary Muscles:</strong> ${primaryMuscles}</p>` : ''}
+                        ${secondaryMuscles ? `<p><strong>Secondary Muscles:</strong> ${secondaryMuscles}</p>` : ''}
+                        ${equipment ? `<p><strong>Equipment:</strong> ${equipment}</p>` : ''}
+                        <p><strong>Description:</strong></p>
+                        <div>${description}</div>
+                `;
+
+                if (exercise.images && exercise.images.length > 0) {
+                    detailHTML += '<div style="margin-top: 15px;">';
+                    exercise.images.forEach(img => {
+                        detailHTML += `<img src="${img.image}" alt="${exerciseName}" style="max-width: 100%; border-radius: 10px; margin: 10px 0;">`;
+                    });
+                    detailHTML += '</div>';
+                }
+
+                if (exercise.videos && exercise.videos.length > 0) {
+                    detailHTML += '<p><strong>Video Demonstrations:</strong></p>';
+                    exercise.videos.forEach(video => {
+                        detailHTML += `<p><a href="${video.url}" target="_blank">Watch Video</a></p>`;
+                    });
+                }
+
+                detailHTML += '</div>';
+
+                Swal.fire({
+                    title: 'Exercise Details',
+                    html: detailHTML,
+                    width: 700,
+                    confirmButtonColor: '#667eea'
+                });
+            } catch (error) {
+                console.error('Error loading exercise detail:', error);
+                Swal.fire('Error', 'Could not load exercise details', 'error');
+            }
+        }
+
+        async function logWorkout() {
+            const workout = {
+                exercise: document.getElementById('logExercise').value,
+                sets: parseInt(document.getElementById('logSets').value),
+                reps: parseInt(document.getElementById('logReps').value),
+                weight: parseFloat(document.getElementById('logWeight').value),
+                notes: document.getElementById('logNotes').value,
+                date: new Date().toISOString()
+            };
+
+            if (!workout.exercise) {
+                Swal.fire('Error', 'Please enter an exercise name', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/workouts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(workout)
+                });
+
+                if (response.ok) {
+                    workouts.push(workout);
+                    localStorage.setItem('workouts', JSON.stringify(workouts));
+                    
+                    Swal.fire('Success!', 'Workout logged successfully', 'success');
+                    
+                    document.getElementById('logExercise').value = '';
+                    document.getElementById('logNotes').value = '';
+                    
+                    displayTodayWorkouts();
+                }
+            } catch (error) {
+                console.error('Error logging workout:', error);
+                workouts.push(workout);
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+                Swal.fire('Success!', 'Workout logged locally', 'success');
+                displayTodayWorkouts();
+            }
+        }
+
+        function displayTodayWorkouts() {
+            const today = new Date().toDateString();
+            const todayWorkouts = workouts.filter(w => 
+                new Date(w.date).toDateString() === today
+            );
+
+            const container = document.getElementById('todayWorkouts');
+            if (todayWorkouts.length === 0) {
+                container.innerHTML = '<p>No workouts logged today. Time to get started!</p>';
+                return;
+            }
+
+            container.innerHTML = todayWorkouts.map(w => `
+                <div class="log-entry">
+                    <strong>${w.exercise}</strong> - ${w.sets} sets × ${w.reps} reps @ ${w.weight} lbs
+                    ${w.notes ? `<br><em>${w.notes}</em>` : ''}
+                </div>
+            `).join('');
+        }
+
+        loadExercises();
+        loadMuscleGroups();
+        loadWorkoutsFromAPI();
+    </script>
+</body>
+</html>

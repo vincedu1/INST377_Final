@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INST377 Final - Fitness Tracker Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #667eea;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 36px;
+            margin: 10px 0;
+        }
+
+        .log-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Fitness Tracker</div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="exercises.html">Exercises & Log</a></li>
+                <li><a href="progress.html">Progress & Goals</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Welcome to my Fitness Tracker</h1>
+            <a href="exercises.html" class="btn">Explore Exercises</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-fire fa-2x"></i>
+                <h3 id="totalWorkouts">0</h3>
+                <p>Total Workouts</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy fa-2x"></i>
+                <h3 id="goalsCompleted">0</h3>
+                <p>Goals Completed</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-check fa-2x"></i>
+                <h3 id="currentStreak">0</h3>
+                <p>Workout Streak</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-chart-line"></i> Recent Activity</h2>
+            <div id="recentActivity"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        let workouts = [];
+        let goals = [];
+
+        async function loadWorkoutsFromAPI() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/workouts`);
+                if (response.ok) {
+                    workouts = await response.json();
+                    updateStats();
+                    displayRecentActivity();
+                } else {
+                    console.error('Failed to load workouts from API');
+                    const stored = localStorage.getItem('workouts');
+                    if (stored) {
+                        workouts = JSON.parse(stored);
+                        updateStats();
+                        displayRecentActivity();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading workouts:', error);
+                const stored = localStorage.getItem('workouts');
+                if (stored) {
+                    workouts = JSON.parse(stored);
+                    updateStats();
+                    displayRecentActivity();
+                }
+            }
+        }
+
+        async function loadGoalsFromAPI() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/goals`);
+                if (response.ok) {
+                    goals = await response.json();
+                    updateStats();
+                } else {
+                    console.error('Failed to load goals from API');
+                    const stored = localStorage.getItem('goals');
+                    if (stored) {
+                        goals = JSON.parse(stored);
+                        updateStats();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading goals:', error);
+                const stored = localStorage.getItem('goals');
+                if (stored) {
+                    goals = JSON.parse(stored);
+                    updateStats();
+                }
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalWorkouts').textContent = workouts.length;
+            
+            const completedGoals = goals.filter(g => 
+                (g.current / g.target) >= 1
+            ).length;
+            document.getElementById('goalsCompleted').textContent = completedGoals;
+
+            const dates = [...new Set(workouts.map(w => 
+                new Date(w.date).toDateString()
+            ))].sort((a, b) => new Date(b) - new Date(a));
+            
+            let streak = 0;
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            
+            if (dates.length > 0 && (dates[0] === today || dates[0] === yesterday)) {
+                streak = 1;
+                for (let i = 1; i < dates.length; i++) {
+                    const diff = new Date(dates[i-1]) - new Date(dates[i]);
+                    if (diff === 86400000) streak++;
+                    else break;
+                }
+            }
+            document.getElementById('currentStreak').textContent = streak;
+        }
+
+        function displayRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            if (workouts.length === 0) {
+                container.innerHTML = '<p>No recent activity. Start logging workouts!</p>';
+                return;
+            }
+
+            const recent = [...workouts].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            ).slice(0, 5);
+
+            container.innerHTML = recent.map(w => `
+                <div class="log-entry">
+                    <strong>${w.exercise}</strong> - ${w.sets}×${w.reps} @ ${w.weight}lbs
+                    <br><small>${new Date(w.date).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
+
+        loadWorkoutsFromAPI();
+        loadGoalsFromAPI();
+    </script>
+</body>
+</html>
