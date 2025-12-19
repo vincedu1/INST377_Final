@@ -1,15 +1,39 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "./index.js",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/"
-        }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "public/workouts.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/goals.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/healthcheck.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/workouts",
+      "dest": "/public/workouts.js"
+    },
+    {
+      "src": "/api/goals",
+      "dest": "/public/goals.js"
+    },
+    {
+      "src": "/api",
+      "dest": "/public/healthcheck.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
 }
