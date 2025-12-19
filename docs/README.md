@@ -16,10 +16,9 @@
 ## INSTALLATION GUIDE
 
 # STEP 1: CLONE REPOSITORY
-git clone https://github.com/vincedu1/INST377-Final
+git clone https://github.com/vincedu1/INST377_Final.git
 
 # STEP 2: INSTALL DEPENDENCIES
-cd backend
 npm install
 
 # STEP 3: SET UP SUPABASE
@@ -65,15 +64,8 @@ SUPABASE_KEY = 'your-anon-public-key-here';
 
 ## RUNNING THE APPLICATION
 # Start backend server
-
-1. Navigate to the backend directory:
-cd backend
-
-2. Start the server:
+1. Start the server:
 npm start
-
-3. You should see:
-Server running on http://localhost:3000
 
 # Start frontend
 If you have VS Code, install the "Live Server" extension:
@@ -81,10 +73,14 @@ If you have VS Code, install the "Live Server" extension:
 2. Select "Open with Live Server"
 3. Browser will open at `http://127.0.0.1:5500`
 
+# Vercel
+The website is also fully deployed on Vercel here:
+https://inst-377-final-weld.vercel.app/
+
 ## BACKEND TESTING
 1. **Test Server Status**
 GET http://localhost:3000/
-Expected: {"message": "FitTrack API is running!"}
+Expected: Frontend Loads
 
 2. **Test GET Workouts**
 GET http://localhost:3000/api/workouts
